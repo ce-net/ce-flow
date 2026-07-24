@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>how this mesh works - ce-flow viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin:0; padding:24px; background:#0e1013; color:#e6e6e6;
+         font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  h1 { font-size:16px; margin:0 0 4px; }
+  .sub { color:#6b7280; margin-bottom:20px; }
+  .stack { display:grid; gap:18px; max-width:1020px; margin:0 auto; }
+  .cellhead { color:#6b7280; font-size:11px; margin:0 0 6px 2px; }
+  .cellhead b { color:#b7bec9; }
+  #empty { color:#6b7280; }
+</style>
+</head>
+<body>
+<h1>how this mesh works</h1>
+<div class="sub" id="sub">asking the mesh which apps explain themselves...</div>
+<div class="stack" id="stack"><div id="empty">no self-explaining apps found - transmit some (ce-comp serve --app ...)</div></div>
+
+<script type="module">
+  // ZERO HARDCODE: this page mounts every component the mesh offers whose name is "flow" -
+  // each app's own self-managed "how I work" graph. New app transmits a flow -> it appears here.
+  import { init } from "../../loader.js";
+  const ceComp = await init({ nodeUrl: `${location.origin}/node` });
+  const stack = document.getElementById("stack");
+  const offers = await ceComp.discover();
+  let mounted = 0;
+  for (const offer of offers) {
+    for (const comp of offer.components.filter((c) => c.name === "flow")) {
+      const cell = document.createElement("div");
+      const head = document.createElement("div");
+      head.className = "cellhead";
+      head.innerHTML = `<b>${offer.app}</b> explains itself - flow served by ${offer.provider.slice(0, 8)} over the mesh`;
+      cell.appendChild(head);
+      stack.appendChild(cell);
+      try {
+        await ceComp.mount(offer, comp, cell, {});
+        mounted += 1;
+      } catch (e) {
+        head.textContent = `${offer.app}/flow failed: ${e.message}`;
+      }
+    }
+  }
+  if (mounted) document.getElementById("empty")?.remove();
+  document.getElementById("sub").textContent =
+    `${mounted} apps explain themselves right now (of ${offers.length} transmitting) - each graph is the app's own, the engine arrives from ce-flow, nothing here is hardcoded`;
+</script>
+</body>
+</html>

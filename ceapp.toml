@@ -1,0 +1,12 @@
+[app]
+name = "ce-flow"
+version = "0.1.0"
+summary = "Reusable graph engine: apps explain how they work with animated, narrated flow graphs; viewers mount whatever the mesh offers."
+runtime = "script"
+
+[script]
+interpreter = "python3"
+entry = "examples/viewer/serve.py"
+
+[daemon]
+enabled = true

@@ -1,0 +1,14 @@
+# Component exports of ce-flow — the reusable graph engine (delivery = ce-comp).
+
+[app]
+name = "ce-flow"
+version = "0.1.0"
+
+[[component]]
+name = "graph"
+tag = "ce-flow-graph"
+module = "components/graph.js"
+props = ["descriptor", "autoplay"]
+events = ["step-shown", "node-clicked"]
+backing = "none - pure renderer; the app that mounts it supplies the descriptor and the live pulses"
+needs = []
